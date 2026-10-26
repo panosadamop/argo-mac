@@ -1,5 +1,3 @@
-<p align="center"><img src="docs/banner.png" alt="Argo. Your whole Mac, one sentence away." width="100%"></p>
-
 <p align="center">
   Hold <kbd>⌃ control</kbd> <kbd>⌥ option</kbd> <kbd>space</kbd>, say what you need, let go.<br>
   Argo moves your windows, finds your files, reads your screen and gets it done.
