@@ -31,7 +31,7 @@ def tint(color, alpha, bg='#ffffff'):
 
 class UIReviewFixTests(unittest.TestCase):
     def setUp(self):
-        self.swift = (ROOT / 'Atticus.swift').read_text()
+        self.swift = (ROOT / 'Argo.swift').read_text()
         self.box = (ROOT / 'ui/ui.html').read_text()
         self.settings = (ROOT / 'ui/settings.html').read_text()
         self.onboarding = (ROOT / 'ui/onboarding.html').read_text()
@@ -164,9 +164,9 @@ if (away.frames || away.timers || !away.waiting) process.exit(3);
         self.assertIn('@objc func tipsOn() { settings.apply("tips", true); settings.push() }', menu)
 
     def test_removed_sonnet_offer_leaves_no_card_branch(self):
-        self.assertNotIn('Sonnet', self.box[self.box.index('    respond(text)'):self.box.index('    improve()')])
+        self.assertNotIn('Sonnet', self.box[self.box.index('    respond(text)'):self.box.index('    pick({ q, options })')])
         self.assertNotIn('"escalate"', self.swift[self.swift.index('func userContentController'):self.swift.index('    func show()')])
-        self.assertNotIn("j.get('off'", (ROOT / 'atticus.py').read_text())
+        self.assertNotIn("j.get('off'", (ROOT / 'argo.py').read_text())
 
     def test_agent_cost_reads_like_usage(self):
         script = ''

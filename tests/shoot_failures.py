@@ -1,6 +1,6 @@
 """Failure lines in the real box, VM only (opt-in, not discovered: run this module by name).
 
-run.sh <repo> tests.shoot_failures → the real Atticus binary asks a fake `claude` (first on PATH) that fails each way,
+run.sh <repo> tests.shoot_failures → the real Argo binary asks a fake `claude` (first on PATH) that fails each way,
 over a white page and a dark desktop; prints the windows it opened and PNGs as base64 (the runner copies nothing back).
 Asks go through the app's own `demo` hook; the idea pill needs one added line, in a scratch copy of the source.
 """
@@ -29,7 +29,7 @@ errors = {'plan': 'You\u2019ve hit your weekly limit \u00b7 resets 3pm (America/
 if mode in errors:
     out({'type': 'result', 'is_error': True, 'result': errors[mode], 'total_cost_usd': 0}); sys.exit(1)
 if mode == 'voice':
-    cmd = os.environ['ATTICUS_RESOURCES_DIR'] + '/atticus.py --set "voice" off'
+    cmd = os.environ['ARGO_RESOURCES_DIR'] + '/argo.py --set "voice" off'
     out({'type': 'assistant', 'message': {'content': [{'type': 'tool_use', 'id': 't1', 'name': 'Bash', 'input': {'command': cmd}}]}})
     said = subprocess.run(['/bin/sh', '-c', cmd], capture_output=True, text=True).stdout.strip()
     out({'type': 'user', 'message': {'content': [{'type': 'tool_result', 'tool_use_id': 't1', 'content': said, 'is_error': False}]}})
@@ -73,16 +73,16 @@ class FailureShots(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory(); cls.addClassCleanup(cls.temp.cleanup)
         cls.root = Path(cls.temp.name)
-        source = (ROOT / 'Atticus.swift').read_text()
+        source = (ROOT / 'Argo.swift').read_text()
         end = 'NSApplication.shared.setActivationPolicy(.accessory)\nNSApplication.shared.run()'
         demo = 'DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { app.js("listen")'
         assert source.count(end) == 1 and source.count(demo) == 1
         # 5 s: on the 2-CPU VM the box's page may still be loading at 1.5 s, and a js() call before it loads is lost
         hook = 'if UserDefaults.standard.bool(forKey: "shotIdea") { DispatchQueue.main.asyncAfter(deadline: .now() + 5) { app.idea(0) } }\n'
-        (cls.root / 'Atticus.swift').write_text(source.replace(end, hook + end).replace(demo, demo.replace('1.5', '5')))
-        swiftc(cls.root / 'Atticus.swift', cls.root / 'Atticus')
+        (cls.root / 'Argo.swift').write_text(source.replace(end, hook + end).replace(demo, demo.replace('1.5', '5')))
+        swiftc(cls.root / 'Argo.swift', cls.root / 'Argo')
         (cls.root / 'tool.swift').write_text(TOOL); swiftc(cls.root / 'tool.swift', cls.root / 'tool')
-        # atticus.py puts ~/.local/bin before the caller's PATH (and the VM has a signed-out Claude there), so the fakes live in a scratch HOME.
+        # argo.py puts ~/.local/bin before the caller's PATH (and the VM has a signed-out Claude there), so the fakes live in a scratch HOME.
         # osascript: the VM can't answer the System Events prompt, so the front-window read would wait out its 60 s timeout for the same ''.
         cls.home = cls.root / 'home'; bin_ = cls.home / '.local/bin'; bin_.mkdir(parents=True)
         (bin_ / 'claude').write_text(FAKE.replace('PYTHON', sys.executable)); (bin_ / 'claude').chmod(0o755)
@@ -90,15 +90,15 @@ class FailureShots(unittest.TestCase):
         cls.path = f'{bin_}:{os.environ["PATH"]}'
         for shadow in ('/opt/homebrew/bin/claude', '/usr/local/bin/claude', '/opt/homebrew/bin/osascript', '/usr/local/bin/osascript'):
             if os.path.exists(shadow): print(f'WARNING {shadow} would shadow a fake', flush=True)
-        check = subprocess.run(['/bin/sh', str(ROOT / 'atticus.py'), '--check'], capture_output=True, text=True, timeout=60,
-                               env={**os.environ, 'HOME': str(cls.home), 'PATH': cls.path, 'ATTICUS_DIR': str(cls.root)})
+        check = subprocess.run(['/bin/sh', str(ROOT / 'argo.py'), '--check'], capture_output=True, text=True, timeout=60,
+                               env={**os.environ, 'HOME': str(cls.home), 'PATH': cls.path, 'ARGO_DIR': str(cls.root)})
         assert json.loads(check.stdout)['ok'], check.stdout + check.stderr
 
     def wins(self, pid):
         out = subprocess.run([str(self.root / 'tool'), 'wins', str(pid)], capture_output=True, text=True, timeout=5).stdout
         return json.loads(out or '[]')
 
-    def box(self, rows):   # the box and its pill: Atticus's status-bar-level panels, not the menu-bar icon
+    def box(self, rows):   # the box and its pill: Argo's status-bar-level panels, not the menu-bar icon
         return [r for r in rows if r['layer'] >= 20 and r['bounds'].get('Y', 0) > 30 and r['bounds'].get('Height', 0) > 20]
 
     def capture(self, name, *args):
@@ -109,13 +109,13 @@ class FailureShots(unittest.TestCase):
     def shoot(self, n, mode, request, delays, look):
         state = self.root / f'state-{n}-{look}'; state.mkdir()
         (state / 'settings.json').write_text(json.dumps({'hideWhenSharing': False, 'screen': 'never', 'selection': False}))
-        env = {**os.environ, 'HOME': str(self.home), 'PATH': self.path, 'ATTICUS_DIR': str(state), 'ATTICUS_RESOURCES_DIR': str(ROOT),
+        env = {**os.environ, 'HOME': str(self.home), 'PATH': self.path, 'ARGO_DIR': str(state), 'ARGO_RESOURCES_DIR': str(ROOT),
                'FAKE_CLAUDE_MODE': mode}
         back = subprocess.Popen([str(self.root / 'tool'), 'back', look], stdout=subprocess.PIPE, text=True)
         self.assertEqual(back.stdout.readline().strip(), 'READY')
         args = ['-onboarded', 'YES'] + (['-shotIdea', 'YES'] if mode == 'idea' else ['-demo', request])
         errors = (state / 'stderr.txt').open('w')   # a pipe would stay open in the app's helpers and hang the teardown
-        app = subprocess.Popen([str(self.root / 'Atticus'), *args], env=env, stdout=subprocess.DEVNULL, stderr=errors, text=True)
+        app = subprocess.Popen([str(self.root / 'Argo'), *args], env=env, stdout=subprocess.DEVNULL, stderr=errors, text=True)
         try:
             deadline = time.monotonic() + 20
             while not self.box(self.wins(app.pid)) and time.monotonic() < deadline: time.sleep(.1)
@@ -141,7 +141,7 @@ class FailureShots(unittest.TestCase):
             try: app.wait(timeout=5)
             except subprocess.TimeoutExpired: app.kill(); app.wait()
             back.wait(timeout=5); back.stdout.close(); errors.close()
-            subprocess.run(['pkill', '-f', f'{ROOT}/atticus.py'])   # the worker has its own process group; a waiting card would outlive the app
+            subprocess.run(['pkill', '-f', f'{ROOT}/argo.py'])   # the worker has its own process group; a waiting card would outlive the app
             print(f'STDERR {n} {look} {(state / "stderr.txt").read_text()[-800:]!r}', flush=True)
 
     def test_shots(self):

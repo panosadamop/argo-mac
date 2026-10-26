@@ -1,1 +1,1 @@
-# Task eval harness for Atticus (fake Mac + optional live Claude).
+# Task eval harness for Argo (fake Mac + optional live Claude).

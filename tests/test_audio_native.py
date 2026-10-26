@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 @unittest.skipUnless(sys.platform == "darwin", "macOS Swift audio regression")
 class AudioNativeTests(unittest.TestCase):
     def test_read_aloud_never_overwrites_system_voice_or_trusts_siri_probe(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         self.assertNotIn("CFPreferencesSetAppValue", source)
         self.assertNotIn("siriVoice", source)
         deliver = source[source.index("    func deliver("):source.index("    func linger(")]
@@ -20,7 +20,7 @@ class AudioNativeTests(unittest.TestCase):
         self.assertIn("p.arguments = sayArguments(words)", drawing)
 
     def test_best_installed_english_voice_prefers_quality_then_region(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         policy = source[source.index("struct ReadAloudVoice"):source.index("func sayVoiceNames")]
         run_swift(self, """import Foundation
 import AVFoundation
@@ -47,7 +47,7 @@ print("read-aloud voice policy ok")
 """)
 
     def test_say_voice_is_validated_and_compact_tip_is_once(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         voice = source[source.index("let installedSayVoices"):source.index("// The talk shortcut")]
         self.assertIn('p.arguments = ["-v", "?"]', voice)
         self.assertNotIn('"-v", "?"', voice[voice.index("func usableReadAloudVoice"):])   # listed once, not per read
@@ -59,7 +59,7 @@ print("read-aloud voice policy ok")
         self.assertIn("Manage Voices", tip)
 
     def test_say_voice_list_parser_handles_spaces_and_rejects_unknown_names(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         parser = source[source.index("func sayVoiceNames"):source.index("func preferredReadAloudVoice")]
         run_swift(self, "import Foundation\n" + parser + """
 let names = sayVoiceNames("Bad News            en_US    # Hello\\nDaniel (English (UK)) en_GB    # Hello\\n")
@@ -73,7 +73,7 @@ print("say voice list parser ok")
 """)
 
     def test_saved_voice_and_unavailable_voice_fallback(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         policy = source[source.index("struct ReadAloudVoice"):source.index("let installedSayVoices")]
         arguments = source[source.index("func readAloudArguments"):source.index("// The talk shortcut")]
         self.assertIn('language: NLLanguageRecognizer.dominantLanguage(for: words)', source[source.index("func usableReadAloudVoice"):source.index("func readAloudArguments")])
@@ -116,7 +116,7 @@ print("saved voice and fallback ok")
 """)
 
     def test_device_choice_falls_back_without_opening_bluetooth(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         policy = source[source.index("struct MicrophoneDevice"):source.index("func listenMic()")]
         run_swift(self, 
             """import Foundation
@@ -145,7 +145,7 @@ print("microphone policy ok")
         self.assertIn("microphoneID: demo ? nil : listenMic()?.uid", source)
 
     def test_quiet_audio_restores_release_and_cancel(self):
-        source = (ROOT / "Atticus.swift").read_text()
+        source = (ROOT / "Argo.swift").read_text()
         model = source[source.index("struct AudioVolumeSnapshot"):source.index("struct CoreAudioVolume")]
         quiet = source[source.index("final class AudioQuiet"):source.index("enum AudioRecovery")]
         run_swift(self, 

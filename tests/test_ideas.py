@@ -1,13 +1,12 @@
-"""Ideas when I'm away: the once-a-day timing rule, its Settings switch and its anonymous count. No app, window or user settings."""
+"""Ideas when I'm away: the once-a-day timing rule, and its Settings switch. No app, window or user settings."""
 from pathlib import Path
 import unittest
-from unittest.mock import patch
 
-import atticus
+import argo
 from tests import run_swift
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = (ROOT / 'Atticus.swift').read_text()
+SOURCE = (ROOT / 'Argo.swift').read_text()
 
 
 class IdeaTests(unittest.TestCase):
@@ -34,16 +33,9 @@ print("ok")
         self.assertIn('"comeBack": true', defaults)
         page = (ROOT / 'ui/settings.html').read_text()
         tips = page.index('data-k="support"')
-        self.assertIn('<b>Ideas when I’m away</b><span>Now and then, a short idea if you haven’t used Atticus.</span></div><label class="sw"><input type="checkbox" data-k="comeBack">',
+        self.assertIn('<b>Ideas when I’m away</b><span>Now and then, a short idea if you haven’t used Argo.</span></div><label class="sw"><input type="checkbox" data-k="comeBack">',
                       page[tips:tips + 300])
-        self.assertEqual(atticus.switches()['comeBack'], 'Ideas when I’m away')   # by voice too
-
-    def test_telemetry_counts_the_index_never_the_text(self):
-        for action, index in (('shown', 3), ('clicked', 0)):
-            sent = []
-            with patch('sys.argv', ['atticus.py', '--telemetry', 'idea', action, str(index)]), patch.object(atticus, 'posthog', lambda *a: sent.append(a)):
-                atticus.main()
-            self.assertEqual(sent, [('idea', {'action': action, 'index': index})])
+        self.assertEqual(argo.switches()['comeBack'], 'Ideas when I’m away')   # by voice too
 
 
 if __name__ == '__main__':

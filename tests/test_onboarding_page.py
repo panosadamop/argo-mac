@@ -135,7 +135,7 @@ class OnboardingPageTests(unittest.TestCase):
     def run_page(self, page, width, height, script):
         result = subprocess.run(
             [str(self.binary), str(page), str(width), str(height), script],
-            capture_output=True, text=True, timeout=30, env={**os.environ, 'ATTICUS_DIR': self.tmp.name})
+            capture_output=True, text=True, timeout=30, env={**os.environ, 'ARGO_DIR': self.tmp.name})
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return json.loads(result.stdout.strip().splitlines()[-1])
 
