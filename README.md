@@ -5,8 +5,6 @@
   Argo moves your windows, finds your files, reads your screen and gets it done.
 </p>
 
-<p align="center"><a href="https://ko-fi.com/saarthr"><b>☕ Leave a tip</b></a> · Argo is free; tips keep it going.</p>
-
 <p align="center">
   <b>🧠 Learns as you use it</b> &nbsp;·&nbsp; <b>⚡ Fast</b> &nbsp;·&nbsp; <b>🔑 No API key</b> &nbsp;·&nbsp; <b>Free and open source</b>
 </p>
@@ -39,7 +37,6 @@ Needs macOS 26 and an AI client: Claude Code on a Claude plan, Devin, Pi or a lo
   <img alt="Swift" src="https://img.shields.io/badge/Swift-1d1d1f?style=for-the-badge&logo=swift&logoColor=white">
   <img alt="Claude" src="https://img.shields.io/badge/Claude_Haiku-1d1d1f?style=for-the-badge&logo=anthropic&logoColor=white">
   <img alt="Cost" src="https://img.shields.io/badge/~0.18%C2%A2_per_ask-1d1d1f?style=for-the-badge">
-  <a href="https://ko-fi.com/saarthr"><img alt="Support on Ko-fi" src="https://img.shields.io/badge/Support_on_Ko--fi-1d1d1f?style=for-the-badge&logo=kofi&logoColor=white"></a>
 </p>
 
 <br>

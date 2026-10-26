@@ -56,7 +56,7 @@ class CrossReviewTests(unittest.TestCase):
 
     def test_failed_resume_and_saving_changes_do_not_apply_success_effects(self):
         source = (ROOT / 'Argo.swift').read_text()
-        resume = source[source.index('            if b["resume"] != nil'):source.index('            if b["kofi"]')]
+        resume = source[source.index('            if b["resume"] != nil'):source.index('            if b["replace"]')]
         saving = source[source.index('        if k == "meetingSave", v as? Bool == false'):source.index('            let alert = NSAlert(); alert.messageText = "Keep your saved meetings?"')]
         swift_check(self, 'enum Prefs { static func bool(_ k:String)->Bool { true }; static func set(_ k:String,_ v:Bool)->Bool { false } }\n'
                     + 'struct Meeting { func savingChanged(_ on:Bool) { fatalError("archive changed") } }; let meeting=Meeting()\n'

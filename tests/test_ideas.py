@@ -28,11 +28,11 @@ print("ok")
                      'onboarding.win == nil', '!agentsUI.quiet', 'meeting.panel == nil', 'callAppsOnMic().isEmpty', '!fullScreen()', 'secondsSinceLastEventType'):
             self.assertIn(need, check)
 
-    def test_setting_row_defaults_on_beside_tip_reminders(self):
+    def test_setting_row_defaults_on(self):
         defaults = SOURCE[SOURCE.index('static let defaults'):SOURCE.index('static let retiredKeys')]
         self.assertIn('"comeBack": true', defaults)
         page = (ROOT / 'ui/settings.html').read_text()
-        tips = page.index('data-k="support"')
+        tips = page.index('<b>Ideas when I’m away</b>')
         self.assertIn('<b>Ideas when I’m away</b><span>Now and then, a short idea if you haven’t used Argo.</span></div><label class="sw"><input type="checkbox" data-k="comeBack">',
                       page[tips:tips + 300])
         self.assertEqual(argo.switches()['comeBack'], 'Ideas when I’m away')   # by voice too

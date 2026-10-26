@@ -250,11 +250,6 @@
   .ok.offer { cursor: default; } .ok.offer:is(:hover,.hot) { background: rgba(255,255,255,.07); }   /* a question, not a command: nothing to unfold */
   .ok.offer p { margin: 4px 0 0; font-size: 12px; line-height: 1.4; color: var(--fg2); }
   .ok.offer .details { display: block; margin: 9px auto 0; height: auto; flex: none; border-radius: 0; background: none; box-shadow: none; }
-  .tip.kofi { cursor: pointer; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.16); } .tip.kofi::before { color: #ff375f; }   /* quiet: no accent, it's an ask not a hint */
-  .tip.kofi .support { border: 0; padding: 0; background: none; color: inherit; font: inherit; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; border-radius: 4px; }
-  .tip.kofi:is(:hover,.hot) { background: rgba(10,132,255,.22); box-shadow: inset 0 0 0 1px #64d2ff; }
-  .tip.kofi .support:is(:hover,.hot) { background: rgba(10,132,255,.2); }
-  .tip.kofi .support:focus-visible { outline: 2px solid #64d2ff; outline-offset: 3px; }
   .tip.gone { opacity: 0; transform: translateY(-4px); transition: opacity .4s, transform .4s; }
 
   /* memory receipt: one quiet row under an answer that remembered or forgot something. Click: it opens in place; click an item: Settings → Memory there */
@@ -941,10 +936,9 @@
         }
       } else if (tag === '✎' && turn()) { try { receipt(JSON.parse(s)); } catch {}
       } else if (tag === 'i' && turn()) {
-        const learned = s.startsWith('Learned: '), kofi = s.startsWith('Support: '), d = document.createElement('div');   // "Learned" when it saved a rule, the Ko-fi line, else "Tip"
-        d.className = 'tip' + (learned ? ' learned' : kofi ? ' kofi' : ''); d.dataset.k = learned ? 'Learned' : kofi ? '♥' : 'Tip'; d.textContent = learned || kofi ? s.slice(9) : s;
-        if (kofi) { const b = document.createElement('button'); b.className = 'support'; b.textContent = d.textContent; d.replaceChildren(b); b.onclick = () => { post({ kofi: true }); d.remove(); fit(); }; }
-        if (!learned) { const o = document.createElement('button'); o.className = 'off'; o.textContent = kofi ? 'Turn off' : 'Turn off tips'; d.append(o); }
+        const learned = s.startsWith('Learned: '), d = document.createElement('div');   // "Learned" when it saved a rule, else "Tip"
+        d.className = 'tip' + (learned ? ' learned' : ''); d.dataset.k = learned ? 'Learned' : 'Tip'; d.textContent = learned ? s.slice(9) : s;
+        if (!learned) { const o = document.createElement('button'); o.className = 'off'; o.textContent = 'Turn off tips'; d.append(o); }
         turn().append(d);
         setTimeout(() => { d.classList.add('gone'); setTimeout(() => { d.remove(); fit(); }, 400); }, 9000);   // never sticks around
       }
@@ -985,15 +979,14 @@
     compose(on) { comp(on, on); },
     draft(t) { $('ask').value = t; comp(true, true); },
     tap([x, y]) {   // a click on the box, not a drag: on the answer = copy it, anywhere else = type
-      const el = document.elementFromPoint(x, y), b = el?.closest('a[href], .ok button, .ok, .pk button, .pk, .rewrite button, .mini-view, .mem-i, .mem-h, .mem, .shot, #pointbar button, .redo, #agents-pill, .dn button, .tip .support');
+      const el = document.elementFromPoint(x, y), b = el?.closest('a[href], .ok button, .ok, .pk button, .pk, .rewrite button, .mini-view, .mem-i, .mem-h, .mem, .shot, #pointbar button, .redo, #agents-pill, .dn button');
       const field = el?.closest('.ok input, .ok textarea, .pk input, .pk textarea');   // "Something else…": a text field in a card takes the cursor
       if (field) return field.focus();
       if (b) return b.click();
       if (document.body.classList.contains('dictate')) return;   // the pill has no typing box: only its buttons act
       if (el?.closest('#mode')) return enableSafeMode();
       if ($('comp').classList.contains('pick')) pickRow(false);   // a click anywhere else closes the model row
-      if (el?.closest('.tip .off')) { const k = el.closest('.tip.kofi') ? 'support' : 'tips'; post({ off: k }); el.closest('.tip').remove(); status(k === 'tips' ? 'Tips off · The menu bar turns them back on' : 'Tip reminders off · Settings → About turns them back on'); return fit(); }   // its own "Turn off": no more of that kind
-      if (el?.closest('.tip.kofi')) post({ kofi: true });   // the support line opens Ko-fi, then goes like any tip
+      if (el?.closest('.tip .off')) { post({ off: 'tips' }); el.closest('.tip').remove(); status('Tips off · The menu bar turns them back on'); return fit(); }   // its own "Turn off": no more tips
       if (el?.closest('.tip')) { el.closest('.tip').remove(); return fit(); }   // click a tip: it goes
       const on = el?.closest('.a:not(.stopped):not(.cancel)'), q = el?.closest('.q:not(.empty)');
       drop();

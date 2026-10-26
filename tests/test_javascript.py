@@ -126,7 +126,7 @@ expect(md('snake_case_name and _em_'),'<p>snake_case_name and <em>em</em></p>','
         native = (root / 'Argo.swift').read_text()
         self.assertIn("post({resume:true})", page)
         self.assertIn("Date().timeIntervalSince(pausedNotice) > 4", native)
-        resume = native[native.index('if b["resume"] != nil {'):native.index('if b["kofi"]')]
+        resume = native[native.index('if b["resume"] != nil {'):native.index('if b["replace"]')]
         self.assertIn('Argo.settings.apply("paused", false)', resume)
 
 

@@ -73,11 +73,7 @@ d.querySelector('[data-k=routing] [data-v=cheapest]').click();await until(()=>me
 assert(messages.some(m=>m.do==='set'&&m.k==='routing'&&m.v==='cheapest')&&$('wk-why').textContent.includes('least'),'Work choices save and explain themselves');
 assert($('work').textContent.includes('⌃⌥↩'),'The work page names the move shortcut');
 for(const e of $('work').querySelectorAll('.row')){const r=e.getBoundingClientRect();assert(r.right<=640&&r.bottom<=612,'Fits window work / '+e.textContent.slice(0,12))}
-await go('meeting');assert($('meeting').textContent.includes('Settings → Meetings')&&!!$('mt-archive'),'Meeting preview includes the local archive');await go('tip');
-for(const e of $('tip').children){const r=e.getBoundingClientRect();assert(r.left>=0&&r.right<=640&&r.top>=0&&r.bottom<=612,'Fits window tip / '+(e.id||e.className))}
-assert($('tip').textContent.includes('really support me')&&$('kofi').textContent.includes('Leave a Tip'),'Tip page asks for a tip on its own screen');
-$('kofi').click();await until(()=>messages.some(m=>m.do==='kofi'),'tip request');assert(true,'Leave a Tip opens the tip page');assert(d.querySelector('.page.on').id==='tip','Tipping stays on the tip page');
-await go('done');
+await go('meeting');assert($('meeting').textContent.includes('Settings → Meetings')&&!!$('mt-archive'),'Meeting preview includes the local archive');await go('done');
 w.ob.prefs({...P0,dictateHotkeyLabel:'fn⌃⌥⇧⌘Return'});
 assert($('ideas').textContent.includes('Convert this JPEG to PNG'),'Things to try includes file conversion');
 const ideas=[...d.querySelectorAll('#ideas .idea')].filter(e=>!e.hidden).map(e=>e.firstElementChild.getBoundingClientRect());

@@ -166,17 +166,6 @@
     box-shadow: inset 0 0 0 .5px var(--line), 0 10px 30px rgba(0,0,0,.12); }
   .bar2 { display: flex; gap: 10px; margin-top: 26px; }
   .bar2 .btn { margin-top: 0; }
-  /* the tip page: one warm heart, then Leave a Tip beside Next */
-  #tip-heart { width: 72px; height: 72px; margin-bottom: 20px; border-radius: 22px; display: grid; place-items: center;
-    background: linear-gradient(160deg, #ff7a8a, #ff375f); box-shadow: 0 10px 28px rgba(255,55,95,.32), inset 0 .5px 0 rgba(255,255,255,.35); }
-  #tip-heart svg { width: 36px; height: 36px; fill: #fff; }
-  #tip.on #tip-heart { animation: beat 1.6s .5s var(--ease) 2; }
-  @keyframes beat { 0%, 100% { transform: none; } 15% { transform: scale(1.1); } 30% { transform: none; } 45% { transform: scale(1.06); } }
-  #tip p.sub { max-width: 420px; }
-  #kofi { display: inline-flex; align-items: center; gap: 7px; background: #ff375f; }
-  #kofi svg { width: 15px; height: 15px; fill: #fff; }
-  #tip .done-note { margin-top: 18px; }
-  @media (prefers-reduced-motion: reduce) { #tip.on #tip-heart { animation: none; } }
   .done-note { height: 18px; margin-top: 12px; font-size: 12.5px; color: var(--fg3); }
   #feedback-note .alt { margin: 0; font-size: 12.5px; }
   .done-note a { color: var(--accent); cursor: pointer; } .done-note a:hover { text-decoration: underline; }
@@ -492,15 +481,7 @@
   <div class="mt-row r"><div class="ic" style="background:#30b0c7"><svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></div>
     <div class="txt"><b>Turn on Meeting Copilot<span class="beta">Beta</span></b><span id="mt-hint"></span></div>
     <label class="sw"><input type="checkbox" data-k="meeting" aria-label="Meeting Copilot"></label></div>
-  <div class="bar2 r"><button class="btn quiet" data-go="tip">Skip</button><button class="btn" data-go="tip">Next</button></div>
-</section>
-
-<section class="page" id="tip">
-  <div id="tip-heart" class="r" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg></div>
-  <h2 class="r">Argo is free and open source</h2>
-  <p class="sub r">If you ever find yourself enjoying Argo, a small tip goes a long way. It keeps Argo free for everyone, and it would really support me.</p>
-  <div class="bar2 r"><button class="btn" id="kofi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg>Leave a Tip</button><button class="btn quiet" data-go="done" id="tip-next">Next</button></div>
-  <p class="done-note r">You can always find “Leave a Tip” in the menu bar later.</p>
+  <div class="bar2 r"><button class="btn quiet" data-go="done">Skip</button><button class="btn" data-go="done">Next</button></div>
 </section>
 
 <section class="page" id="done">
@@ -553,13 +534,13 @@
   </div>
 </div>
 
-<div id="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div id="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
 <script type="text/plain" id="orbsrc">/*ORBS*/</script>
 <script type="module">
   const $ = id => document.getElementById(id);
   const post = m => window.webkit?.messageHandlers.ob.postMessage(m);
-  const pages = ['welcome', 'perms', 'agents', 'try', 'mac', 'text', 'dictate', 'point', 'work', 'meeting', 'tip', 'done'];
+  const pages = ['welcome', 'perms', 'agents', 'try', 'mac', 'text', 'dictate', 'point', 'work', 'meeting', 'done'];
   let cur = '', orbWake = null;
   const skip = id => ['devin', 'pi', 'custom'].includes(provider) && ['agents', 'work'].includes(id);   // their CLIs run no Argo agents
   const go = id => {
@@ -574,7 +555,6 @@
   document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
   $('back').onclick = () => { let i = pages.indexOf(cur) - 1; while (skip(pages[i])) i--; go(pages[i]); };
   $('finish').onclick = () => post({ do: 'done' });
-  $('kofi').onclick = () => post({ do: 'kofi' });
   $('feedback-link').onclick = () => post({ do: 'feedback' });   // Settings → Report feedback, over this window
   document.querySelectorAll('.sw input').forEach(i => i.onchange = () => post({ do: 'set', k: i.dataset.k, v: String(i.checked) }));
   let prefs = {};

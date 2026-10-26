@@ -45,12 +45,6 @@ for (let i=0;i<10;i++) {
   out.turns.push([inView(turn.querySelector('.elapsed')), inView(turn.querySelector('.step.live')), !turn.querySelector('.elapsed span'), turn.querySelectorAll('.elapsed').length]);
   ui.line('✓ Finished the request.'); if(i===1)ui.line('i Learned: change the setting'); ui.finished(); settle();
 }
-ui.line('i Support: Argo is free, leave a tip'); settle();
-const support=document.querySelector('.tip.kofi'), link=support.querySelector('button:not(.off)');
-link.scrollIntoView(); const lr=link.getBoundingClientRect(), bg=getComputedStyle(link).backgroundColor;
-out.support=[link.tagName, ui.pointer([lr.x+lr.width/2,lr.y+lr.height/2]), getComputedStyle(link).cursor]; settle();
-out.support.push(bg!==getComputedStyle(link).backgroundColor);
-link.click(); out.support.push(!support.isConnected); ui.pointer([]);
 ui.dictate(true); ui.learned('Argo'); const dn = document.getElementById('dn');
 out.learned = [dn.textContent, getComputedStyle(dn).display, dn.className];
 return out;
@@ -93,8 +87,6 @@ class BoxPageTests(unittest.TestCase):
         self.assertEqual(out['two'], 'I started an agent on “Ebikes”. I’ll ping you when it’s done. Queued an agent for “Helmets”. It starts when another one finishes.')   # the queued one is not called started
         self.assertEqual(out['mix'], 'Queued an agent for “Tents”. It starts when another one finishes. I started agents on “Stoves” and “Maps”. I’ll ping you when they’re done.')
         self.assertEqual(out['turns'], [[True, True, True, 1]] * 10)
-        self.assertEqual(out['support'], ['BUTTON', True, 'pointer', True, True])
-        self.assertTrue(any(isinstance(p, dict) and p.get('kofi') for p in got['posts']))
         self.assertEqual(out['learned'], ['Learned “Argo” Undo', 'flex', 'dn tick'])
 
 

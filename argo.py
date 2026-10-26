@@ -3579,10 +3579,6 @@ TIPS = ['Say "remember …" and Argo keeps it as a rule.',
         'Ask "where do I click to …" and a ring marks the spot.',
         'Tap the shortcut to type instead of talk.',
         'Sonnet gives better answers on hard tasks. Settings → Intelligence → Balanced uses it for real work.']
-SUPPORT = ['Enjoying Argo? Leave a tip →',
-           'Argo is free. A small tip keeps it that way →',
-           'Made by one person. A tip helps a lot →',
-           'Did that save you a minute? Tip the developer →']
 MISS = 'Saying the same thing more than once? Tell Argo how you want it done. It remembers next time.'
 MODEL_OFFER = '\nModel: reply ONLY [sonnet] before tools for hard multi-step reasoning or research. Else finish; retry a failed tool once another way. Stopping short of a reachable goal: end [sonnet], never offer to continue.'
 
@@ -3632,23 +3628,17 @@ def message_blocks(event):
 
 def tip(reply, taught=''):
     """One small tip under the answer ("i <tip>"). After a miss or a redo: how to teach it (the AI's own words if it gave some),
-    every time; otherwise a general tip at most every 6 h. Off in Settings. The tip-jar line ("Support: …") has its own
-    switch and clock: at most every 4 h, never after a miss."""
+    every time; otherwise a general tip at most every 6 h. Off in Settings."""
     if os.environ.get('ARGO_UI') != '1':
         return
     tips, miss = pref('tips', True), taught or failed_action_reply(reply, getattr(run, 'work', False))
     if taught.startswith('Learned:') or tips and miss:
         return say('i', taught or MISS)
-    stamp, kofi = os.path.join(DIR, 'tip'), os.path.join(DIR, 'kofi')
+    stamp = os.path.join(DIR, 'tip')
     if miss:
         return
-    if not os.path.exists(kofi):   # first ask, or an install from before the tip jar: its 4 h clock starts now
-        Path(kofi).touch()
     if not os.path.exists(stamp):   # never on the very first ask
         return Path(stamp).write_text('0')
-    if pref('support', pref('tips', True)) and time.time() - os.path.getmtime(kofi) > 4 * 3600:
-        Path(kofi).touch()
-        return say('i', 'Support: ' + SUPPORT[int(time.time()) % len(SUPPORT)])
     n = int(Path(stamp).read_text() or 0)
     if not tips or time.time() - os.path.getmtime(stamp) < 6 * 3600:
         return
